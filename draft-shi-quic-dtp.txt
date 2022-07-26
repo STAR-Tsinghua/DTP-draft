@@ -31,7 +31,7 @@ About This Document
    https://datatracker.ietf.org/doc/draft-shi-quic-dtp/.
 
    Source for this draft and an issue tracker can be found at
-   https://github.com/simonkorl/DTP-draft.
+   https://github.com/STAR-Tsinghua/DTP-draft.
 
 Status of This Memo
 
