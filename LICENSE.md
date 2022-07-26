@@ -1,4 +1,4 @@
 # License
 
 See the
-[guidelines for contributions](https://github.com/simonkorl/DTP-draft/blob/main/CONTRIBUTING.md).
+[guidelines for contributions](https://github.com/STAR-Tsinghua/DTP-draft/blob/main/CONTRIBUTING.md).

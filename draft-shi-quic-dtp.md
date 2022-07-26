@@ -14,7 +14,7 @@ keyword: Deadline-aware Transport Protocol
 ipr: trust200902
 
 venue:
-  github: "simonkorl/DTP-draft"
+  github: "STAR-Tsinghua/DTP-draft"
 
 author:
 -
