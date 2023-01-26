@@ -252,6 +252,8 @@ DTP adds two kinds of BLOCK\_INFO frames (type=0x20, 0x21). Either of these fram
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                     Type (i) = 0x20..0x21                   ...
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                        Stream ID (i)                        ...
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                        Block Size (i)                       ...
@@ -260,7 +262,7 @@ DTP adds two kinds of BLOCK\_INFO frames (type=0x20, 0x21). Either of these fram
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                      Block Deadline (i)                     ...
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                    [Start time stamp (i)]                   ...
+   |                    [Start timestamp (i)]                   ...
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
 {: #block title="BLOCK_INFO Frame Format"}
@@ -270,19 +272,19 @@ DTP adds two kinds of BLOCK\_INFO frames (type=0x20, 0x21). Either of these fram
 * Block Size: A variable-length integer indicating the size of the block.
 * Block Priority: A variable-length integer indicating the priority of the block.
 * Block Deadline: A variable-length integer indicating the required transimission deadline. Dealine should be a duration in microseconds.
-* Start time stamp: An optional parameter to inform the receiver about the starting time of this block. This parameter may be helpful when the receiver wants to use the deadline information. The time stamp parameter SHOULD be the same format as [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time). The sender and receiver SHOULD do clock synchronization if they use this parameter.
+* Start timestamp: An optional parameter to inform the receiver about the starting time of this block. This parameter may be helpful when the receiver wants to use the deadline information. The timestamp parameter SHOULD be the same format as [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time). The sender and receiver SHOULD do clock synchronization if they use this parameter.
 
-## Adjusted QUIC Frame: Timestamped ACK Frame {#timestamped-ack-frame}
+## New Frame: Timestamped ACK Frame {#timestamped-ack-frame}
 
-DTP add a new Time Stamp Parameter to QUIC ACK Frame. Timestamped ACK frames are sent by reveiver to inform senders of the time when the packet the peer is acknowledging is received and processed. ACK mechanism of DTP is almost the same with QUIC. The format of the Timestamped ACK frames is similar to that of the standard ACK Frames defined in section 19.3 of [QUIC]:
+DTP adds a new Timestamped ACK Frame, containing a timestamp to carry the timeliness information. The receiver sends Timestamped ACK Frame to inform the sender when a packet is received and processed. ACK mechanism of DTP is almost the same as QUIC. The format of Timestamped ACK frames is similar to the standard ACK Frames defined in section 19.3 of [QUIC] (As shown in {{ackq}}):
 
 ~~~
     0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                     Largest Acknowledged (i)                ...
+   |                     Type (i) = 0x02..0x03                   ...
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-   |                          Time Stamp (i)                     ...
+   |                     Largest Acknowledged (i)                ...
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                          ACK Delay (i)                      ...
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -295,13 +297,38 @@ DTP add a new Time Stamp Parameter to QUIC ACK Frame. Timestamped ACK frames are
    |                          [ECN Counts]                       ...
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
+{: #ackq title="Standard QUIC ACK Frame Format"}
+
+DTP appends a timestamp parameter after the original QUIC ACK Frame Format and defines the type of this new frame 0x22..0x23 (As shown in {{time}}). The timestamp parameter can be regarded as an optional parameter of the QUIC ACK Frame while using an extension frame type.
+
+~~~
+    0                   1                   2                   3
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                     Type (i) = 0x22..0x23                   ...
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                     Largest Acknowledged (i)                ...
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          ACK Delay (i)                      ...
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       ACK Range Count (i)                   ...
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                       First ACK Range (i)                   ...
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          ACK Ranges (i)                     ...
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          [ECN Counts]                       ...
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |                          Timestamp (i)                     ...
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+~~~
 {: #time title="Timestamped ACK Frame Format"}
 
-Using this time stamp parameter we can calculate whether the prior blocks transmitted missing deadline or not, and we can also calculate the block completion rate before deadline. The time stamp parameter SHOULD be the same format as [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time).
+Using this timestamp parameter, we can calculate whether the prior blocks transmitted misses the deadline or not, and we can also calculate the block completion rate before the deadline. The timestamp parameter SHOULD be in the same format as [Unix timestamp](https://en.wikipedia.org/wiki/Unix_time).
 
-The Timestamped ACK is adequate to inform the sender about the timeliness information from the receiver side. To fully use the deadline information in the block, the sender and the receiver should do clock synchronization.
+The Timestamped ACK is adequate to inform the sender about the timeliness information from the receiver side. To fully use the deadline information in the block, the sender and the receiver SHOULD do clock synchronization.
 
-## Redundancy Packet {#redundancy-packet}
+## New Packet: Redundancy Packet {#redundancy-packet}
 
 We use a F Flags in DTP Packet to distinguish which DTP packets is Redundancy-protected or not. {{rf}} shows the Redundancy Packet Format. If the flag is set, the Redundancy Group ID, m, n, index field is appended to the header. They are used by the Redundancy Scheme(Forward-Error-Correction) to identify the redundancy-protected data and communicate information about the encoding and decoding procedures to the receiver-side Redundancy Scheme.
 
