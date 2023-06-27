@@ -1,0 +1,83 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2023-06-27T00:55:05.654731+00:00",
+  "repo": "STAR-Tsinghua/DTP-draft",
+  "labels": [
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOHtjpwM48CpTo",
+      "title": "Add DTP info report and relay node",
+      "url": "https://github.com/STAR-Tsinghua/DTP-draft/pull/1",
+      "state": "MERGED",
+      "author": "VMatrix1900",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Using DTP to build an overlay of deadline-aware path.",
+      "createdAt": "2022-07-25T13:38:25Z",
+      "updatedAt": "2022-07-25T13:44:33Z",
+      "baseRepository": "STAR-Tsinghua/DTP-draft",
+      "baseRefName": "main",
+      "baseRefOid": "8e9880261fade5b892c8119f45b2bf58e5564378",
+      "headRepository": "STAR-Tsinghua/DTP-draft",
+      "headRefName": "VMatrix1900-relay",
+      "headRefOid": "e0266eb323dbb2e618ce655ec9798f18d41231b9",
+      "closedAt": "2022-07-25T13:44:33Z",
+      "mergedAt": "2022-07-25T13:44:33Z",
+      "mergedBy": "simonkorl",
+      "mergeCommit": {
+        "oid": "3eb1b0a992de73a0b9384af81bd1de1a1049d3f1"
+      },
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}
