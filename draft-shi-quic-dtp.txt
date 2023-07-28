@@ -5,11 +5,11 @@
 QUIC                                                              Y. Cui
 Internet-Draft                                                     C. Ma
 Intended status: Informational                       Tsinghua University
-Expires: 30 July 2023                                             H. Shi
+Expires: 29 January 2024                                          H. Shi
                                                                 K. Zheng
                                                                  W. Wang
                                                                   Huawei
-                                                         26 January 2023
+                                                            28 July 2023
 
 
                    Deadline-aware Transport Protocol
@@ -48,7 +48,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 30 July 2023.
+   This Internet-Draft will expire on 29 January 2024.
 
 Copyright Notice
 
@@ -86,9 +86,13 @@ Table of Contents
        5.2.1.  Data Transmission Functions
        5.2.2.  Feedback Functions
      5.3.  Collaborate with upper layer protocols
-   6.  Security Considerations
-   7.  IANA Considerations
-   8.  Normative References
+   6.  Design Considerations
+     6.1.  Clock Synchronization
+     6.2.  Block Dependency
+     6.3.  Automatic Block Info
+   7.  Security Considerations
+   8.  IANA Considerations
+   9.  Normative References
    Acknowledgments
    Authors' Addresses
 
@@ -283,7 +287,7 @@ Table of Contents
    round the scheduler still chooses to send the high priority block,
    then the low priority block may miss the deadline next round and
    become useless.  In some cases, the scheduler can choose to send a
-   low priority block because it's more urgent.  But it should do so
+   low priority block because it’s more urgent.  But it should do so
    without causing the high priority stream missing the deadline.  This
    example reveals a fundamental conflict between the application
    specified priority and deadline implicated priority.  DTP needs to
@@ -748,17 +752,56 @@ Table of Contents
    node working together to improve the deadline-delivery performance
    end-to-end.
 
-6.  Security Considerations
+6.  Design Considerations
+
+6.1.  Clock Synchronization
+
+   The fundamental design of DTP relies on precise clock
+   synchronization.  The block scheduler requires high clock precision
+   to accurately perform block canceling functions and efficient
+   scheduling.  Timestamped ACKs also necessitate high clock precision
+   to enable the server and client to utilize deadline information
+   effectively.  However, achieving high precision clock synchronization
+   across the web poses challenges.  Further discussions are required to
+   explore how to best utilize the deadline information in such
+   circumstances.
+
+6.2.  Block Dependency
+
+   Video streams often exhibit decoding dependencies among their frames.
+   To address this, it would be beneficial to include block dependencies
+   as critical metadata in the block info.  Our basic design involves
+   adding an integer field to the block info frame, indicating the
+   stream id on which the current block depends.  This enhancement may
+   facilitate efficient block processing and playback, ensuring that
+   frames are correctly ordered and decoded based on their dependencies.
+
+6.3.  Automatic Block Info
+
+   DTP receives block priorities and block deadlines from the send and
+   update API.  However, determining appropriate values for these
+   parameters can be challenging for applications.  Even in cases where
+   applications, such as RTC publishers, aim for transport delays below
+   100ms, they may not get the ideal transport result by setting the
+   block deadline parameter to 100ms.  To address this, it might be
+   necessary to devise an automatic method that can recognize the
+   application's requirements and assign rational parameter values
+   accordingly.  Implementing such an automatic mechanism can streamline
+   the configuration process for applications, freeing developers from
+   the burden of manually fine-tuning parameters and ensuring optimal
+   data transmission with minimal human intervention.
+
+7.  Security Considerations
 
    See the security considerations in [QUIC] and [QUIC-TLS]; the block-
    based data of DTP shares the same security properties as the data
    transmitted within a QUIC connection.
 
-7.  IANA Considerations
+8.  IANA Considerations
 
    This document has no IANA actions.
 
-8.  Normative References
+9.  Normative References
 
    [arXiv_1809.04822]
               Michel, F., Coninck, Q., and O. Bonaventure, "Adding
