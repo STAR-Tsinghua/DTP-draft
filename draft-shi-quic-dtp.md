@@ -455,6 +455,20 @@ All these functions mentioned above are running in asynchronous mode. An applica
 
 Application protocol on top of DTP may benefit from the block info and detail metric of the transport layer. DTP MAY expose the block information to the receiver side application and the status of the congestion control and buffer status to both sender side and receiver side application. This information will enable multiple DTP relay node working together to improve the deadline-delivery performance end-to-end.
 
+# Design Considerations
+
+## Clock Synchronization
+
+The fundamental design of DTP relies on precise clock synchronization. The block scheduler requires high clock precision to accurately perform block canceling functions and efficient scheduling. Timestamped ACKs also necessitate high clock precision to enable the server and client to utilize deadline information effectively. However, achieving high precision clock synchronization across the web poses challenges. Further discussions are required to explore how to best utilize the deadline information in such circumstances.
+
+## Block Dependency
+
+Video streams often exhibit decoding dependencies among their frames. To address this, it would be beneficial to include block dependencies as critical metadata in the block info. Our basic design involves adding an integer field to the block info frame, indicating the stream id on which the current block depends. This enhancement may facilitate efficient block processing and playback, ensuring that frames are correctly ordered and decoded based on their dependencies.
+
+## Automatic Block Info
+
+DTP receives block priorities and block deadlines from the `send` and `update` API. However, determining appropriate values for these parameters can be challenging for applications. Even in cases where applications, such as RTC publishers, aim for transport delays below 100ms, they may not get the ideal transport result by setting the `block deadline` parameter to 100ms. To address this, it might be necessary to devise an automatic method that can recognize the application's requirements and assign rational parameter values accordingly. Implementing such an automatic mechanism can streamline the configuration process for applications, freeing developers from the burden of manually fine-tuning parameters and ensuring optimal data transmission with minimal human intervention.
+
 # Security Considerations
 
 See the security considerations in {{QUIC}} and {{QUIC-TLS}}; the block-based data of DTP shares the same security properties as the data transmitted within a QUIC connection.
